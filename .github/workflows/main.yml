@@ -47,13 +47,13 @@ jobs:
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
-      with:
+      with: 
         name: ${{matrix.os}}
         path: ./artifacts
 
   deploy-packages-nuget:
 
-    if: github.event_name == 'release'
+    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
 
     runs-on: windows-latest
 
@@ -69,6 +69,9 @@ jobs:
         path: ./artifacts
 
     - name: Push to NuGet
-      run: dotnet nuget push --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_AUTH_TOKEN}} .\artifacts\**\*.nupkg --skip-duplicate --no-symbols true
+      run: |
+        ls
+        ls artifacts/
+        dotnet nuget push --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_AUTH_TOKEN}} .\artifacts\**\*.nupkg --skip-duplicate --no-symbols true
       env:
         DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLE: false
