@@ -53,36 +53,7 @@ jobs:
         name: ${{matrix.os}}
         path: ./artifacts
 
-  deploy-packages-github:
-
-    needs: build
-
-    if: github.ref == 'refs/heads/main' || github.event_name == 'release'
-
-    runs-on: windows-latest
-
-    env:
-        DOTNET_NOLOGO: true
-        DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-
-    steps:      
-    - name: Download Artifacts 
-      uses: actions/download-artifact@v2
-      with:
-        name: ubuntu-latest
-        path: ./artifacts
-
-    - name: Add GitHub Packages Source
-      run: dotnet nuget add source https://nuget.pkg.github.com/shyn/index.json --name GitHub --username shyn --password ${{secrets.GITHUB_TOKEN}} --store-password-in-clear-text
-      
-    - name: Push to GitHub Packages
-      run: dotnet nuget push .\artifacts\**\*.nupkg --source GitHub --skip-duplicate --no-symbols true
-      env:
-        DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLE: false   
-
   deploy-packages-nuget:
-
-    needs: deploy-packages-github
 
     if: github.event_name == 'release'
 
